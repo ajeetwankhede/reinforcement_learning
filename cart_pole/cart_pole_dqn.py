@@ -1,5 +1,15 @@
 # https://blog.gofynd.com/building-a-deep-q-network-in-pytorch-fa1086aa5435
 
+# Main concepts implemented for DQN:
+# 1. Use Neural Network to approximate the Q values
+# 2. Different nets for stablizing the training. Syncing every n steps
+# 3. Batch train with experience replay
+
+# Issues observed:
+# 1. Hard to get the same results for every run
+# 2. Very sensitive to random seed and other hyper parameters
+# 3. Difficult to generalize the agent
+
 import torch
 import torch.nn as nn
 from torch.distributions.normal import Normal
