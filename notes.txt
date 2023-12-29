@@ -1,0 +1,14 @@
+Q learning methods:
+Data efficient - require lower sample complexity, but not stable. 
+DQN: With larger replay buffer the training is better
+These have worked well on game like tasks with image as input
+
+Policy gradient methods:
+Policy can be simpler than Q or V
+Need more simulation data. If running simulation is inexpensive then these are good.
+These have worked well for continuous control tasks such as robotic locomotion
+Usually big learning/improvement at start.
+Policy entropy can be measured as a diagnostic during the training
+
+REINFORCE:
+Based on rewards of entire path/trajectory/roll-out shift policy probabilities up or down
