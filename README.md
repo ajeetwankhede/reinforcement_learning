@@ -28,7 +28,7 @@ Reference links:
 https://blog.gofynd.com/building-a-deep-q-network-in-pytorch-fa1086aa5435
 
 
-4. [REINFORCE]()
+4. [REINFORCE](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/cart_pole/cart_pole_reinforce.py)
 ```bash
 Update equation:
 Policy Update = sum over t=0:T [ log( pi(st,at) ) * discounted sum of future Rt ]
@@ -43,4 +43,4 @@ Baseline: Value function
 Policy Update = sum over t=0:T [ log( pi(st,at) ) * ( discounted sum of future Rt - basline ) ]
 ```
 
-## [References]()
+## [References](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/references.md)
