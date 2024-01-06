@@ -43,4 +43,13 @@ Baseline: Value function
 Policy Update = sum over t=0:T [ log( pi(st,at) ) * ( discounted sum of future Rt - basline ) ]
 ```
 
+6. [A2C]()
+```bash
+Update equation:
+Baseline: Value function
+Policy Update = sum over t=0:T [ log( pi(st,at) ) * ( discounted sum of future Rt - basline ) ]
+```
+Reference links:
+https://gymnasium.farama.org/tutorials/gymnasium_basics/vector_envs_tutorial/ 
+
 ## [References](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/references.md)
