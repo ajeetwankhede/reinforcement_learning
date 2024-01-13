@@ -17,11 +17,12 @@ Reference links:
 https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/ 
 
 
-3. [DQN](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/cart_pole/cart_pole_dqn.py):
+3. [DQN](https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html):
 ```bash
 Update equation:
 Q_predicted = Q_net(s,a)
-Q_expected = R + gamma * max_over_a [ Q_target_net(sn,a) ]
+Q_expected = R + gamma * max_over_a [ Q_target_net(sn,a) ] if not terminal state
+Q_expected = 0 if terminal state
 MSE loss fcn = (Q_predicted, Q_expected)
 ```
 Reference links:

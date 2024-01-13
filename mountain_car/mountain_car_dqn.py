@@ -46,7 +46,7 @@ class Params(NamedTuple):
     model_path: Path
 
 params = Params(
-    total_episodes=600,
+    total_episodes=1000,
     layer_sizes=[],
     exp_replay_size = 10000,
     batch_size = 128,
@@ -56,15 +56,15 @@ params = Params(
     eps_end=0.05,
     eps_decay=1000,
     tau=5e-2,
-    action_size=2,
-    state_size=4,
-    savefig_folder=Path("cart_pole/dqn_results"),
-    model_path=Path('cart_pole/cart_pole_model'),
+    action_size=3,
+    state_size=2,
+    savefig_folder=Path("mountain_car/dqn_results"),
+    model_path=Path('mountain_car/mountain_car_model'),
 )
 params = params._replace(layer_sizes=[params.state_size, 128, 128, params.action_size])
 print(params)
 # Create the figure folder if it doesn't exists
-params.savefig_folder.mkdir(parents=True, exist_ok=True)
+# params.savefig_folder.mkdir(parents=True, exist_ok=True)
 
 class DQNlearning:
     def __init__(self, tau, layer_sizes, learning_rate, gamma, state_size, action_size, exp_replay_size, batch_size):
@@ -227,10 +227,10 @@ agent = DQNlearning(
 mode = input("Train or Replay (T/R)?: ")
 if (mode == "T"):
     env = gym.make(
-    "CartPole-v1")
+    "MountainCar-v0")
     rewards, epsilons, lossess = run_env()
     print(rewards[-10:])
-    save = input("Save model (Y/N)?: ")
+    save = "Y"#input("Save model (Y/N)?: ")
     if save == "Y":
         torch.save(agent.net.state_dict(), params.model_path)
         fig, ax = plt.subplots(nrows=3, ncols=1)
@@ -245,7 +245,7 @@ if (mode == "T"):
     
 else:
     env = gym.make(
-    "CartPole-v1", 
+    "MountainCar-v0", 
     render_mode='human')
     agent.net.load_state_dict(torch.load(str(params.model_path)+"_dqn_baseline"))
     rewards = run_model()
