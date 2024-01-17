@@ -2,6 +2,7 @@ Q learning methods:
 Data efficient - require lower sample complexity, but not stable. 
 DQN: With larger replay buffer the training is better
 These have worked well on game like tasks with image as input
+Use reward shaping for faster learning
 
 Policy gradient methods:
 Policy can be simpler than Q or V

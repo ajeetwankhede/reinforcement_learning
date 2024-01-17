@@ -184,14 +184,14 @@ def run_env():
             next_state, reward, terminated, truncated, _ = env.step(action.item())
 
             reward = reward*0.01 + energy(next_state) - energy([state[0][0].item(),state[0][1].item()])
-            # if next_state[0] >= 0.5:
-            #     reward += 1.0
+            if next_state[0] >= 0.5:
+                reward += 1.0
 
             next_state = torch.tensor(next_state, dtype=torch.float32, device=device).unsqueeze(0)
             reward = torch.tensor([reward], device=device, dtype=torch.float32)
             terminated = torch.tensor([terminated], device=device, dtype=torch.bool)
-            if terminated:
-                num_terminated+=1
+            # if terminated:
+            num_terminated += 1
 
             done = terminated or truncated
             agent.experience_replay.append([state, action, reward, next_state, terminated])
@@ -251,12 +251,12 @@ agent = DQNlearning(
     batch_size=params.batch_size,
 )
 
-mode = "T"#input("Train or Replay (T/R)?: ")
+mode = input("Train or Replay (T/R)?: ")
 if (mode == "T"):
     env = gym.make(
     "MountainCar-v0")
     rewards, epsilons, steps, lossess = run_env()
-    print(rewards[-10:])
+    print(steps[-10:])
     save = "Y"#input("Save model (Y/N)?: ")
     if save == "Y":
         torch.save(agent.net.state_dict(), params.model_path)
