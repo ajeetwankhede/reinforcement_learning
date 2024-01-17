@@ -1,10 +1,8 @@
-# https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
-# https://blog.gofynd.com/building-a-deep-q-network-in-pytorch-fa1086aa5435
+# https://colab.research.google.com/drive/1T9UGr7vdXj1HYE_4qo8KXptIwCS7S-3v#scrollTo=wNjhHIT5XWqr
 
 # Main concepts implemented for DQN:
-# 1. Use Neural Network to approximate the Q values
-# 2. Different nets for stablizing the training. Syncing every n steps
-# 3. Batch train with experience replay
+# 1. Reward shaping for sparse reward environments
+# - https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/NgHaradaRussell-shaping-ICML1999.pdf
 
 
 import matplotlib.pyplot as plt
@@ -46,13 +44,13 @@ class Params(NamedTuple):
     model_path: Path
 
 params = Params(
-    total_episodes=1000,
+    total_episodes=2000,
     layer_sizes=[],
     exp_replay_size = 10000,
     batch_size = 128,
     learning_rate=1e-4,
     gamma=0.99,
-    eps_start=0.9,
+    eps_start=0.90,
     eps_end=0.05,
     eps_decay=1000,
     tau=5e-2,
@@ -132,6 +130,7 @@ class DQNlearning:
         # expected Q: 0  or R + gamma*max(Q(s',a'))
         with torch.no_grad():
             q_exp = torch.logical_not(terminated)*(reward + self.gamma * self.target_net(new_state).max(1).values)
+            q_exp[terminated] = 10.0
 
         loss = self.loss_fn(q_pre, q_exp.unsqueeze(1))
         self.optimizer.zero_grad()
@@ -141,13 +140,28 @@ class DQNlearning:
 
         return loss.item()
 
+def energy(state):
+    x = state[0]
+    v = state[1]
+    m = 1.0
+    g = 0.0025
+    h = np.sin(x-0.5*np.pi+0.5)+1.0
+    u = m*g*h
+    k = 0.5*m*v*v
+    xmax = 0.6
+    vmax = 0.07
+    hmax = np.sin(xmax-0.5*np.pi+0.5)+1.0
+    n = 1/(m*g*hmax + 0.5*m*vmax*vmax)
+    return (u+k)*n
+
 def run_env():
     rewards = np.zeros((params.total_episodes, 1))
     epsilons = np.zeros((params.total_episodes, 1))
     lossess = np.zeros((params.total_episodes, 1))
+    steps = np.zeros((params.total_episodes, 1))
     episodes = np.arange(params.total_episodes)
 
-    step = 0
+    num_terminated = 0
     for episode in tqdm(
         episodes, desc=f"Run Episodes", leave=False
     ):
@@ -156,19 +170,29 @@ def run_env():
         done = False
         total_rewards = 0
         total_losses = 0
-
+        step = 0
+        
         while not done:
-            epsilon = params.eps_end + (params.eps_start-params.eps_end)*math.exp(-1.0*step/params.eps_decay)
-
+            # epsilon = params.eps_end + (params.eps_start-params.eps_end)*math.exp(-1.0*step/params.eps_decay)
+            epsilon = params.eps_end + (params.eps_start-params.eps_end)*math.exp(-1.0*num_terminated/params.eps_decay)
+            
             action = agent.choose_action(
                 state=state,
                 epsilon=epsilon,
             )
 
             next_state, reward, terminated, truncated, _ = env.step(action.item())
+
+            reward = reward*0.01 + energy(next_state) - energy([state[0][0].item(),state[0][1].item()])
+            # if next_state[0] >= 0.5:
+            #     reward += 1.0
+
             next_state = torch.tensor(next_state, dtype=torch.float32, device=device).unsqueeze(0)
             reward = torch.tensor([reward], device=device, dtype=torch.float32)
             terminated = torch.tensor([terminated], device=device, dtype=torch.bool)
+            if terminated:
+                num_terminated+=1
+
             done = terminated or truncated
             agent.experience_replay.append([state, action, reward, next_state, terminated])
 
@@ -190,12 +214,14 @@ def run_env():
         
         rewards[episode] = total_rewards
         epsilons[episode] = epsilon
+        steps[episode] = step
         lossess[episode] = total_losses/step
         
-    return rewards, epsilons, lossess
+    return rewards, epsilons, steps, lossess
 
 def run_model():
     state = env.reset()[0]
+    state = torch.tensor(state, dtype=torch.float32, device=device).unsqueeze(0)
     done = False
     total_rewards = 0
     epsilon = 0.0
@@ -205,10 +231,11 @@ def run_model():
             epsilon=epsilon,
         )
         
-        new_state, reward, terminated, truncated, info = env.step(action)
+        next_state, reward, terminated, truncated, info = env.step(action.item())
         done = terminated or truncated
+        next_state = torch.tensor(next_state, dtype=torch.float32, device=device).unsqueeze(0)
 
-        state = new_state
+        state = next_state
         total_rewards += reward
         
     return total_rewards
@@ -224,22 +251,24 @@ agent = DQNlearning(
     batch_size=params.batch_size,
 )
 
-mode = input("Train or Replay (T/R)?: ")
+mode = "T"#input("Train or Replay (T/R)?: ")
 if (mode == "T"):
     env = gym.make(
     "MountainCar-v0")
-    rewards, epsilons, lossess = run_env()
+    rewards, epsilons, steps, lossess = run_env()
     print(rewards[-10:])
     save = "Y"#input("Save model (Y/N)?: ")
     if save == "Y":
         torch.save(agent.net.state_dict(), params.model_path)
-        fig, ax = plt.subplots(nrows=3, ncols=1)
+        fig, ax = plt.subplots(nrows=4, ncols=1)
         ax[0].plot(rewards)
         ax[0].set_title("rewards")
-        ax[1].plot(epsilons)
-        ax[1].set_title("epsilons")
-        ax[2].plot(lossess)
-        ax[2].set_title("lossess")
+        ax[1].plot(steps)
+        ax[1].set_title("steps")
+        ax[2].plot(epsilons)
+        ax[2].set_title("epsilons")
+        ax[3].plot(lossess)
+        ax[3].set_title("lossess")
         fig.savefig(params.savefig_folder, bbox_inches="tight")
         # plt.show()
     
