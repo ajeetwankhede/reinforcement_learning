@@ -37,14 +37,14 @@ Policy Update = sum over t=0:T [ log( pi(st,at) ) * discounted sum of future Rt 
 Reference links:
 https://gymnasium.farama.org/tutorials/training_agents/reinforce_invpend_gym_v26/ 
 
-5. [Vanila Policy Gradient]()
+5. [Vanila Policy Gradient (TODO)]()
 ```bash
 Update equation:
 Baseline: Value function
 Policy Update = sum over t=0:T [ log( pi(st,at) ) * ( discounted sum of future Rt - basline ) ]
 ```
 
-6. [A2C]()
+6. [A2C (TODO)]()
 ```bash
 Update equation:
 Baseline: Value function
