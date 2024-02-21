@@ -54,4 +54,4 @@ Policy Update = sum over t=0:T [ log( pi(st,at) ) * ( discounted sum of future R
 Reference links:
 https://gymnasium.farama.org/tutorials/gymnasium_basics/vector_envs_tutorial/ 
 
-## [References](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/references.md)
+## [External References](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/references.md)
