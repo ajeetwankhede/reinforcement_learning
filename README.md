@@ -17,7 +17,7 @@ Reference links:
 https://gymnasium.farama.org/tutorials/training_agents/FrozenLake_tuto/ 
 
 
-3. [DQN](https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html):
+3. [DQN](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/cart_pole/cart_pole_dqn.py):
 ```bash
 Update equation:
 Q_predicted = Q_net(s,a)
@@ -27,9 +27,10 @@ MSE loss fcn = (Q_predicted, Q_expected)
 ```
 Reference links:
 https://blog.gofynd.com/building-a-deep-q-network-in-pytorch-fa1086aa5435
+https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
 
 
-4. [REINFORCE](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/cart_pole/cart_pole_reinforce.py)
+4. [REINFORCE](https://github.com/ajeetwankhede/reinforcement_learning/blob/main/inverted_pendulum/inverted_pendulum_reinforce.py)
 ```bash
 Update equation:
 Policy Update = sum over t=0:T [ log( pi(st,at) ) * discounted sum of future Rt ]
